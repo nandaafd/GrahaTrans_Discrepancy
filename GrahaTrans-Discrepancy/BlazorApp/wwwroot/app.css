@@ -1,0 +1,35 @@
+﻿
+.btn-primary {
+    background-color: #233157;
+    border: 1px solid #233157;
+}
+.btn-outline-primary {
+    color: #233157;
+    border: 1px solid #233157;
+}
+.btn-primary:hover {
+    background-color: #ECA643;
+    border: 1px solid #ECA643;
+}
+
+.btn-outline-primary:hover {
+    background-color: #ECA643;
+    color:white;
+    border: 1px solid #ECA643;
+}
+.btn-edit {
+    max-width: 30px;
+    max-height: 30px;
+    font-size: 16px;
+    padding: 0px 5px;
+    background-color: #CFD9FF;
+    border: none;
+}
+.btn-delete {
+    max-width: 30px;
+    max-height: 30px;
+    font-size: 16px;
+    padding: 0px 5px;
+    background-color: #FFCFCF;
+    border: none;
+}

@@ -1,0 +1,130 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudImage Fluid="true" Style="max-width:140px;" Class="py-2 ms-2 me-5" Src="images/dms-logo.png" Alt="logo" />
+        <div>
+            <MudText Class="ms-5 displayNameNav">Nama <br /> <span style="font-size:12px;">Periode : @DateTime.Now.ToString("MMMM yyyy")</span></MudText>
+        </div>
+        <MudSpacer />
+        <div>
+            <form class="frmSearchNav">
+                <div class="input-group">
+                    <input type="text" class="form-control" style="background-color:inherit;" placeholder="Search OrderNo ..." aria-label="Search">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">
+                        <MudIcon Icon="@Icons.Material.Outlined.Search" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <MudDivider Vertical="true" FlexItem="true" Class="mx-3"/>
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+        <MudMenu Icon="@Icons.Custom.Brands.GitHub" Style="align-self: auto;">
+            <MudText Class="mx-3 my-4"><MudIcon Icon="@Icons.Custom.Brands.GitHub" Color="@Color.Primary" Class="me-2" Size="@Size.Small"/> Nama Anda</MudText>
+            <MudDivider/>
+            <MudMenuItem><MudIcon Icon="@Icons.Material.Outlined.VerifiedUser" Class="me-2" Size="@Size.Small" /> Profile</MudMenuItem>
+            <MudMenuItem Style="color:green;"><MudIcon Icon="@Icons.Material.Outlined.Login" Class="me-2" Size="@Size.Small" /> Login</MudMenuItem>
+            <MudMenuItem Style="color:red;"><MudIcon Icon="@Icons.Material.Outlined.Logout" Class="me-2" Size="@Size.Small" /> Logout</MudMenuItem>
+        </MudMenu>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Style="z-index:100; border-right:solid inherit 1px;">
+        <Sidebar />
+    </MudDrawer>
+    <MudMainContent Style="padding-left:20px;">
+        @Body
+        <CascadingBlazoredModal />
+
+    </MudMainContent>
+</MudLayout>
+
+
+
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+@code {
+    private bool _drawerOpen = true;
+    private bool _isDarkMode = false;
+    private MudTheme? _theme = null;
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _theme = new()
+        {
+            PaletteLight = _lightPalette,
+            PaletteDark = _darkPalette,
+            LayoutProperties = new LayoutProperties()
+        };
+    }
+
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void DarkModeToggle()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    private readonly PaletteLight _lightPalette = new()
+    {
+        Black = "#110e2d",
+        AppbarText = "#424242",
+        Background = "#f8f8f8",
+        AppbarBackground = "rgba(255,255,255,0.99)",
+        DrawerBackground = "#ffffff",
+        GrayLight = "#e8e8e8",
+        GrayLighter = "#f9f9f9",
+    };
+
+    private readonly PaletteDark _darkPalette = new()
+    {
+        Primary = "#7e6fff",
+        Surface = "#1e1e2d",
+        Background = "#1a1a27",
+        BackgroundGray = "#151521",
+        AppbarText = "#92929f",
+        AppbarBackground = "rgba(26,26,39,1)",
+        DrawerBackground = "#1a1a27",
+        ActionDefault = "#74718e",
+        ActionDisabled = "#9999994d",
+        ActionDisabledBackground = "#605f6d4d",
+        TextPrimary = "#b2b0bf",
+        TextSecondary = "#92929f",
+        TextDisabled = "#ffffff33",
+        DrawerIcon = "#92929f",
+        DrawerText = "#92929f",
+        GrayLight = "#2a2833",
+        GrayLighter = "#1e1e2d",
+        Info = "#4a86ff",
+        Success = "#3dcb6c",
+        Warning = "#ffb545",
+        Error = "#ff3f5f",
+        LinesDefault = "#33323e",
+        TableLines = "#33323e",
+        Divider = "#292838",
+        OverlayLight = "#1e1e2d80",
+    };
+
+    public string DarkLightModeButtonIcon => _isDarkMode switch
+    {
+        true => Icons.Material.Rounded.LightMode,
+        false => Icons.Material.Outlined.DarkMode,
+    };
+}
+
+

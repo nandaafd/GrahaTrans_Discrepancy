@@ -1,0 +1,31 @@
+﻿<MudDialog Style="width:90%;">
+    <TitleContent>
+        <MudText Class="h2">Add Product Condition</MudText>
+        
+    </TitleContent>
+    <DialogContent>
+        <form action="/" method="post">
+            <div class="mb-3">
+                <label for="CategoryName" class="form-label">Condition Name</label>
+                <input type="text" class="form-control" name="CategoryName" placeholder="product name ..">
+            </div>
+            <div class="mb-3">
+                <label for="Description" class="form-label">Description</label>
+                <textarea name="Description" class="form-control" placeholder="write description .."></textarea>
+            </div>
+        </form>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}

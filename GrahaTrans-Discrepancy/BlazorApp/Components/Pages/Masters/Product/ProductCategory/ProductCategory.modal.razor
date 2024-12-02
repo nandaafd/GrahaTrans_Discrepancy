@@ -1,0 +1,35 @@
+﻿@inherits ProductCategoryBase
+
+<MudDialog Style="width:90%;">
+    <TitleContent>
+        <MudText Class="h2">@((IsEditMode ? "Edit" : "Add")) Product Category</MudText>
+        
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Validated="HandleValidSubmit">
+            <div class="mb-3">
+                <label for="CategoryName" class="form-label">Category Name</label>
+                <MudTextField @bind-Value="_CategoryName" Variant="Variant.Outlined" Placeholder="category name.."/>
+            </div>
+            <div class="mb-3">
+                <label for="Description" class="form-label">Description</label>
+                <MudTextField @bind-Value="_Description" Variant="Variant.Outlined" Lines="3" Placeholder="write description here.."/>
+            </div>
+            @if(IsEditMode){
+                <div class="mb-3">
+                    <label for="CategoryName" class="form-label">Status</label>
+                    <MudSelect @bind-Value="_IsDeleted" Variant="Variant.Outlined"> 
+                        <MudSelectItem Value="false">Active</MudSelectItem>
+                        <MudSelectItem Value="true">NonActive</MudSelectItem>
+                    </MudSelect>
+                </div>
+            }
+            <MudTextField @bind-Value="_ProductCategoryID" Disabled hidden/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+@code{}

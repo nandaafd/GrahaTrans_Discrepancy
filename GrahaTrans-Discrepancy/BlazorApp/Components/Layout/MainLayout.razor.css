@@ -1,0 +1,9 @@
+﻿
+@media (max-width:600px) {
+    ::deep .frmSearchNav {
+        display: none;
+    }
+    ::deep .displayNameNav {
+        display: none;
+    }
+}  

@@ -1,0 +1,142 @@
+﻿@page "/"
+@page "/home"
+@page "/dashboard"
+
+
+<MudContainer Class="mt-16 mb-10 px-8" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <div>
+                <MudPaper Elevation="2" Class="pa-4 d-flex sumBoxPaper sumSalesTotal" Style="height: 110px;">
+                    <MudGrid Class=" d-flex align-items-center">
+                        <MudItem xs="8" sm="8" md="8">
+                            <MudText Style="" Class="sumBoxNumber"><span class="h2">100</span><br />Total penjualan</MudText>
+                        </MudItem>
+                        <MudItem xs="4" sm="4" md="4" Class="d-flex justify-content-end">
+                            <MudIcon style="font-size:70px" Icon="@Icons.Material.Outlined.ShoppingBag"/>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </div>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <div>
+                <MudPaper Elevation="2" Class="pa-4 d-flex sumBoxPaper sumProduct" Style="height: 110px;">
+                    <MudGrid Class=" d-flex align-items-center">
+                        <MudItem xs="8" sm="8" md="8">
+                            <MudText Style="" Class="sumBoxNumber"><span class="h2">173</span><br />Total Product</MudText>
+                        </MudItem>
+                        <MudItem xs="4" sm="4" md="4" Class="d-flex justify-content-end">
+                            <MudIcon style="font-size:70px" Icon="@Icons.Material.Outlined.CardGiftcard" />
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </div>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <div>
+                <MudPaper Elevation="2" Class="pa-4 d-flex sumBoxPaper sumBadStock" Style="height: 110px;">
+                    <MudGrid Class=" d-flex align-items-center">
+                        <MudItem xs="8" sm="8" md="8">
+                            <MudText Style="" Class="sumBoxNumber"><span class="h2">68</span><br />Bad Stock</MudText>
+                        </MudItem>
+                        <MudItem xs="4" sm="4" md="4" Class="d-flex justify-content-end">
+                            <MudIcon style="font-size:70px" Icon="@Icons.Material.Outlined.GppBad" />
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </div>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="3">
+            <div>
+                <MudPaper Elevation="2" Class="pa-4 d-flex sumBoxPaper sumGoodStock" Style="height: 110px;">
+                    <MudGrid Class=" d-flex align-items-center">
+                        <MudItem xs="8" sm="8" md="8">
+                            <MudText Style="" Class="sumBoxNumber"><span class="h2">132</span><br />Good Stock</MudText>
+                        </MudItem>
+                        <MudItem xs="4" sm="4" md="4" Class="d-flex justify-content-end">
+                            <MudIcon style="font-size:70px" Icon="@Icons.Material.Outlined.GppGood" />
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </div>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                        <MudText><span class="h5">Best Seller</span></MudText>
+                        <table class="table mt-3" style="color:inherit">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">ProductName</th>
+                                    <th scope="col">Product Code</th>
+                                    <th scope="col">Qty Sold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                        <MudText><span class="h5">New Arrivals</span></MudText>
+                        <table class="table mt-3" style="color:inherit">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">ProductName</th>
+                                    <th scope="col">Product Code</th>
+                                    <th scope="col">Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+                <MudText><span class="h5">Product categories sold</span></MudText>
+                <MudChart ChartType="ChartType.Donut" Width="300px" Height="300px" InputData="@data" InputLabels="@labels">
+                    <CustomGraphics >
+                        <text class="donut-inner-text" x="47%" y="35%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="2">Total</text>
+                        <text class="donut-inner-text"S x="47%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="5">@data.Sum().ToString()</text>
+                    </CustomGraphics>
+                </MudChart>
+               
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="12">
+            <div>
+                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                    <MudText><span class="h5">Product Almost Expired</span></MudText>
+                    <table class="table mt-3" style="color:inherit">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">ProductName</th>
+                                <th scope="col">Product Code</th>
+                                <th scope="col">Qty</th>
+                                <th scope="col">Price per Pcs</th>
+                                <th scope="col">Date In</th>
+                                <th scope="col">Expired Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                        </tbody>
+                    </table>
+                </MudPaper>
+            </div>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+@code {
+    public double[] data = { 25, 77, 28, 5 };
+    public string[] labels = { "Makanan", "Minuman", "Pakaian", "Medis" };
+ }

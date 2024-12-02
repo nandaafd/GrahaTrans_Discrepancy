@@ -1,0 +1,69 @@
+﻿<MudDialog Style="width:90%;">
+    <TitleContent>
+        <MudText Class="h2">Add Product Item</MudText>
+        
+    </TitleContent>
+    <DialogContent>
+        <form action="/" method="post">
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Product Code</label>
+                <input type="text" class="form-control" name="ProductCode" readonly placeholder="(auto generate by sistem)">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Product Name</label>
+                <input type="text" class="form-control" name="ProductName" placeholder="product name ..">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Category</label>
+                <select class="form-select" name="ProductCategoryID">
+                    <option>- select category -</option>
+                </select>
+            </div>
+            <div class="">
+                <label for="exampleInputEmail1" class="form-label">Description</label>
+                <textarea name="Description" class="form-control" placeholder="write description .."></textarea>
+            </div>
+            <hr/>
+            <MudExpansionPanel Text="Dimension" Style="padding:0px 0px;">
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Weight (gram)</label>
+                    <input type="number" class="form-control" name="Weight" placeholder="weight on grams ..">
+                </div>
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col">
+                            <label for="exampleInputEmail1" class="form-label">Length (centimeters)</label>
+                            <input type="number" class="form-control" name="Length" placeholder="100cm">
+                        </div>
+                        <div class="col">
+                            <label for="exampleInputEmail1" class="form-label">Width (centimeters)</label>
+                            <input type="number" class="form-control" name="Width" placeholder="100cm">
+                        </div>
+                        <div class="col">
+                            <label for="exampleInputEmail1" class="form-label">Height (centimeters)</label>
+                            <input type="number" class="form-control" name="Height" placeholder="100cm">
+                        </div>
+                    </div>
+                </div>
+            </MudExpansionPanel>
+            <hr />
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Image</label>
+                <input type="file" class="form-control" name="DocumentFile">
+            </div>
+        </form>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}

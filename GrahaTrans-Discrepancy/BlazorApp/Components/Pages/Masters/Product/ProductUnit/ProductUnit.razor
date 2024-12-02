@@ -1,0 +1,62 @@
+﻿@page "/master/unit"
+
+<MudBreadcrumbs Items="_items" Separator=">" />
+<MudContainer Class="mt-5 mb-10 px-1 pe-4" MaxWidth="MaxWidth.False">
+    <MudGrid>
+        <MudItem xs="12" md="12" sm="12" Class="px-3">
+            <MudPaper Elevation="1" Class="px-3">
+                <MudGrid Class="pb-3">
+                    <MudItem xs="6" md="4" sm="6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Unit Name</label>
+                            <input type="text" name="ProductName" class="form-control form-control-sm" placeholder="product name.." />
+                        </div>
+                    </MudItem>
+                    <MudItem xs="6" md="4" sm="6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Approved</label>
+                            <select name="Approved" class="form-select form-select-sm">
+                                <option>-- all --</option>
+                                <option value="1">Approved</option>
+                                <option value="2">UnApproved</option>
+                            </select>
+                        </div>
+                    </MudItem>
+                    <MudItem xs="6" md="4" sm="6">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="Status" class="form-select form-select-sm">
+                                <option>-- all --</option>
+                                <option value="1">Active</option>
+                                <option value="2">Inactive</option>
+                            </select>
+                        </div>
+                    </MudItem>
+                    <MudItem xs="12" md="12" sm="12">
+                        <div>
+                            <button type="submit" class="btn btn-sm btn-outline-primary"><MudIcon Icon="@Icons.Material.Outlined.FilterAlt" Size="Size.Small" /> Filter</button>
+                            <button type="submit" class="btn btn-sm btn-primary" @onclick="OpenDialog"><MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Small" /> Add New</button>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+<!-- Modal -->
+@code {
+    private async Task OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<ProductUnit_modal>("Add Product unit", options);
+        var result = await dialog.Result;
+
+    }
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Dashboard", href: "/", icon: Icons.Material.Outlined.Dashboard),
+        new BreadcrumbItem("Master Product Unit Type", href: null, disabled:true, icon: Icons.Material.Outlined.TableView),
+        // new BreadcrumbItem("Create", href: null, disabled: true, icon: Icons.Material.Filled.Create)
+    };
+}

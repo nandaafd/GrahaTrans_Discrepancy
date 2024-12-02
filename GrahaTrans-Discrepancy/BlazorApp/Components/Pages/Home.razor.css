@@ -1,0 +1,30 @@
+﻿::deep .sumBoxPaper {
+    color: white;
+}
+::deep .sumSalesTotal {
+    background-color: #FDB034;
+}
+    ::deep .sumSalesTotal:hover {
+        background-color: #FFBA4C;
+    }
+::deep .sumProduct {
+    background-color: #26B91E;
+}
+
+    ::deep .sumProduct:hover {
+        background-color: #3ED036;
+    }
+::deep .sumBadStock {
+    background-color: #29B6C0;
+}
+
+    ::deep .sumBadStock:hover {
+        background-color: #44D2DC;
+    }
+::deep .sumGoodStock {
+    background-color: #031569;
+}
+
+    ::deep .sumGoodStock:hover {
+        background-color: #14277C;
+    }

@@ -1,0 +1,83 @@
+﻿<MudNavMenu Class="mud-width-full pt-5">
+        <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Dashboard</MudNavLink>
+        <MudNavGroup Title="Sales Order" Icon="@Icons.Material.Outlined.LocalMall" Expanded="false">
+            <MudNavLink Href="/delete" Icon="@Icons.Material.Outlined.ChevronRight">New Sales Order</MudNavLink>
+            <MudNavLink Href="/delete" Icon="@Icons.Material.Outlined.ChevronRight">Sales On Process</MudNavLink>
+            <MudNavLink Href="/delete" Icon="@Icons.Material.Outlined.ChevronRight">Sales History</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Warehouse" Icon="@Icons.Material.Outlined.Warehouse" Expanded="false">
+            <MudNavGroup Title="Good Stock" Icon="@Icons.Material.Outlined.ChevronRight" Expanded="false">
+                <MudNavLink Href="/delete" Class="ms-3">Sold Item Request</MudNavLink>
+                <MudNavGroup Title="Stock IN" Class="ms-3 pe-3" Expanded="false">
+                    <MudNavLink Href="/delete">Request</MudNavLink>
+                    <MudNavLink Href="/delete">Approval</MudNavLink>
+                </MudNavGroup>
+                <MudNavGroup Title="Stock Out" Class="ms-3 pe-3" Expanded="false">
+                    <MudNavLink Href="/delete">Request</MudNavLink>
+                    <MudNavLink Href="/delete">Approval</MudNavLink>
+                </MudNavGroup>
+            </MudNavGroup>
+            <MudNavGroup Title="Bad Stock" Icon="@Icons.Material.Outlined.ChevronRight" Expanded="false">
+                <MudNavGroup Title="Bad Stock IN" Class="ms-3 pe-3" Expanded="false">
+                    <MudNavLink Href="/delete">Request</MudNavLink>
+                    <MudNavLink Href="/delete">Approval</MudNavLink>
+                </MudNavGroup>
+                <MudNavGroup Title="Bad Stock Out" Class="ms-3 pe-3" Expanded="false">
+                    <MudNavLink Href="/delete">Request</MudNavLink>
+                    <MudNavLink Href="/delete">Approval</MudNavLink>
+                </MudNavGroup>
+            </MudNavGroup>
+            <MudNavLink Href="/delete" Icon="@Icons.Material.Outlined.ChevronRight">Adjusment Stock</MudNavLink>
+            <MudNavLink Href="/delete" Icon="@Icons.Material.Outlined.ChevronRight">Stock Card</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Stock Movement" Icon="@Icons.Material.Outlined.FireTruck" Expanded="false">
+            <MudNavLink Href="/delete" Icon="@Icons.Material.Outlined.ChevronRight">Request</MudNavLink>
+            <MudNavLink Href="/delete" Icon="@Icons.Material.Outlined.ChevronRight">Approval</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Invoice" Icon="@Icons.Material.Outlined.FileCopy" Expanded="false">
+            <MudNavLink Href="/counter" Icon="@Icons.Material.Outlined.ChevronRight">Request</MudNavLink>
+            <MudNavLink Href="/counter" Icon="@Icons.Material.Outlined.ChevronRight">Approval</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Masters" Icon="@Icons.Material.Outlined.TableView" Expanded="false">
+            <MudNavGroup Title="Product" Icon="@Icons.Material.Outlined.ChevronRight" Expanded="false">
+                <MudNavLink Href="/master/productitem" Class="ms-3">Product Item</MudNavLink>
+                <MudNavLink Href="/master/productcategory" Class="ms-3">Product Category</MudNavLink>
+                <MudNavLink Href="/master/unit" Class="ms-3">Unit</MudNavLink>
+                <MudNavLink Href="/master/productcondition" Class="ms-3">Condition</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Title="Organization" Icon="@Icons.Material.Outlined.ChevronRight">
+                <MudNavGroup Title="Buyer" Class="ms-3 pe-3">
+                    <MudNavLink Href="/master/buyer">Buyer</MudNavLink>
+                    <MudNavLink Href="/master/buyercategory">Category</MudNavLink>
+                </MudNavGroup>
+                <MudNavLink Href="/master/employee" Class="ms-3">Employee</MudNavLink>
+                <MudNavLink Href="/master/vehicle" Class="ms-3">Vehicle</MudNavLink>
+                <MudNavLink Href="/master/supplier" Class="ms-3">Supplier</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Title="General" Icon="@Icons.Material.Outlined.ChevronRight">
+                <MudNavLink Href="/master/discount" Class="ms-3">Discount</MudNavLink>
+                <MudNavLink Href="/master/outtype" Class="ms-3">Item Out Type</MudNavLink>
+                <MudNavLink Href="/master/paymentmethod" Class="ms-3">Payment Method</MudNavLink>
+            </MudNavGroup>
+            <MudNavLink Href="/master/warehouse" Icon="@Icons.Material.Outlined.KeyboardArrowRight">Warehouse</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Administrator" Icon="@Icons.Material.Outlined.AdminPanelSettings" Expanded="false">
+            <MudNavLink Href="/delete" Icon="@Icons.Material.Outlined.ChevronRight">Users</MudNavLink>
+            <MudNavGroup Title="Role Mapping" Icon="@Icons.Material.Outlined.ChevronRight">
+                <MudNavLink Href="/delete" Class="ms-3">Role</MudNavLink>
+                <MudNavLink Href="/delete" Class="ms-3">Role Access</MudNavLink>
+                <MudNavLink Href="/delete" Class="ms-3">Mapping Group</MudNavLink>
+            </MudNavGroup>
+            <MudNavLink Href="/delete" Icon="@Icons.Material.Outlined.ChevronRight">Error Logs</MudNavLink>
+        </MudNavGroup>
+    </MudNavMenu>
+@code {
+    private bool isCollapsed = false;
+    private string SidebarClass => isCollapsed ? "sidebar collapsed" : "sidebar";
+    private string TogglerIcon => isCollapsed ? "fas fa-angle-right" : "fas fa-angle-left";
+
+    private void ToggleSidebar()
+    {
+        isCollapsed = !isCollapsed;
+    }
+}
