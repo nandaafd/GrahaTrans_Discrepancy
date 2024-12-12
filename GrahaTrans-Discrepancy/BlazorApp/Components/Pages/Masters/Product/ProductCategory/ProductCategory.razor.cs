@@ -14,6 +14,7 @@ public partial class ProductCategoryBase : Microsoft.AspNetCore.Components.Compo
     
     [Inject]
     protected IJSRuntime JavaScript { get; set; }
+    protected bool _loading;
     private readonly string apiUrl = "https://localhost:7108/api/";
     private readonly HttpClient httpClient = new HttpClient();
     private VMResponse? apiResponse;
@@ -23,9 +24,11 @@ public partial class ProductCategoryBase : Microsoft.AspNetCore.Components.Compo
     protected List<Entities.Domain.ProductCategory>? productCategories = new List<Entities.Domain.ProductCategory>();
     protected bool _sortNameByLength;
     protected SortMode _sortMode = SortMode.Multiple;
+    protected string searchString = string.Empty;
+    protected byte _selStatus = 10;
+    MudDataGrid<Entities.Domain.ProductCategory> dataGrid;
 
 
-    
     protected List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Dashboard", href: "/", icon: Icons.Material.Outlined.Dashboard),
@@ -41,33 +44,55 @@ public partial class ProductCategoryBase : Microsoft.AspNetCore.Components.Compo
     };
     protected override async Task OnInitializedAsync()
     {
-        productCategories = await GetDataAsync();
+        productCategories = GetDataAsync().Result.Where(w => w.Status == _selStatus).ToList();
     }
+  
     protected async Task LoadTable()
     {
-        productCategories = await GetDataAsync();
+        productCategories = await GetDataAsync() ?? new List<Entities.Domain.ProductCategory>();
+        if (productCategories != null || productCategories.Count > 0)
+        {
+            if (!searchString.IsNullOrEmpty() || (_selStatus != null && _selStatus > 0))
+            {
+                productCategories = productCategories.Where(w => (w.CategoryName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || w.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase)) && w.Status == _selStatus).ToList();
+            }
+        }
     }
+    protected Task OnSearch(string text)
+    {
+        searchString = text;
+        return LoadTable();
+    }
+    protected void SelStatus(byte value)
+    {
+        _selStatus = value;
+        LoadTable();
+    }
+   
     protected async Task StatusChange(long id, string name)
     {
         _dotNetRef = DotNetObjectReference.Create(this);
         if (id > 0 && !name.IsNullOrEmpty())
         {
-            //await DeleteData(id);
             await JavaScript.InvokeVoidAsync("showSweetAlert", "warning", "Are you sure?","want to delete this", _dotNetRef, id);
         }
     }
     [JSInvokable]
-    protected async Task DeleteData(long id)
+    public async Task DeleteData(long id)
     {
         Entities.Domain.VMResponse result = await DeleteAsync(id, "name");
+        _loading = true;
         if (result.statusCode == System.Net.HttpStatusCode.OK)
         {
-            //await JavaScript.InvokeVoidAsync("showApiResult", true, result.message);
+            _loading = false;
+            await JavaScript.InvokeVoidAsync("showSweetAlert", "success", "Success", result.message, null, null);
             await LoadTable();
+            StateHasChanged();
         }
         else
         {
-            //await JavaScript.InvokeVoidAsync("showApiResult", false, result.message);
+            await JavaScript.InvokeVoidAsync("showSweetAlert", "error", "Failed", result.message, null, null);
         }
     }
     #region api connection
@@ -97,6 +122,39 @@ public partial class ProductCategoryBase : Microsoft.AspNetCore.Components.Compo
         catch (Exception ex)
         {
             data = null;
+        }
+        return data;
+    }
+    public async Task<List<Entities.Domain.ProductCategory>?> GetByFilterAsync(Entities.ViewModels.VMMasterSearchForm crit)
+    {
+        List<Entities.Domain.ProductCategory>? data = null;
+        try
+        {
+
+            jsonData = JsonConvert.SerializeObject(crit);
+            content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            apiResponse = JsonConvert.DeserializeObject<VMResponse?>(
+                await httpClient.PostAsync(apiUrl + "ProductCategory/GetByFilter", content).Result.Content.ReadAsStringAsync()
+            );
+            if (apiResponse != null)
+            {
+                if (apiResponse.statusCode == System.Net.HttpStatusCode.OK || apiResponse.statusCode == System.Net.HttpStatusCode.Created)
+                {
+                    data = JsonConvert.DeserializeObject<List<Entities.Domain.ProductCategory>?>(
+                        JsonConvert.SerializeObject(apiResponse.data));
+                }
+                else
+                {
+                    throw new Exception(apiResponse.message);
+                }
+            }
+            else
+            {
+                throw new Exception("Product Category API cannot be reached");
+            }
+        }
+        catch (Exception ex)
+        {
         }
         return data;
     }

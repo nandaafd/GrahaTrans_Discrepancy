@@ -15,7 +15,10 @@ public partial class ProductCategoryBase
     protected long _ProductCategoryID;
     protected string _CategoryName;
     protected string _Description;
-    protected bool _IsDeleted;
+    protected byte _Status;
+    protected byte _StatusGet;
+    protected string _ApproveBy { get; set; }
+    protected DateTime _ApproveDt;
 
     [Parameter] public bool IsEditMode { get; set; }
 
@@ -35,6 +38,7 @@ public partial class ProductCategoryBase
     {
         if (IsEditMode && Id > 0)
         {
+            var a = _ApproveBy;
             // Load the existing category details
             var category = await GetIdAsync(Id);
             if (category != null)
@@ -42,7 +46,11 @@ public partial class ProductCategoryBase
                 _ProductCategoryID = category.ProductCategoryId;
                 _CategoryName = category.CategoryName;
                 _Description = category.Description;
-                _IsDeleted = category.IsDeleted;
+                _Status = category.Status;
+                _ApproveBy = string.IsNullOrWhiteSpace(category.ApproveBy) ? "" : category.ApproveBy;
+                _StatusGet = category.Status;
+                //_ApproveDt = category.ApproveDt ?? DateTime.Today;
+
             }
         }
     }
@@ -93,9 +101,12 @@ public partial class ProductCategoryBase
             Id = category.ProductCategoryId;
             _CategoryName = category.CategoryName;
             _Description = category.Description;
+            _Status = category.Status;
+            _StatusGet = category.Status;
+            _ApproveBy = category.ApproveBy;
         }
     }
-    protected async Task Submit()
+    protected async Task Submit(bool IsApproval)
     {
         await form.Validate();
         if (form.IsValid)
@@ -109,7 +120,18 @@ public partial class ProductCategoryBase
                 data.Description = _Description;
                 data.UpdateBy = "name";
                 data.UpdateDt = DateTime.Now;
-                data.IsDeleted = _IsDeleted;
+                if (IsApproval)
+                {
+                    data.ApproveBy = "name";
+                    data.ApproveDt = DateTime.Now;
+                    data.Status = 10;
+                }
+                else
+                {
+                    data.ApproveBy = null;
+                    data.ApproveDt = null;
+                    data.Status = _Status;
+                }
 
                 result = await UpdateAsync(data);
             }
@@ -135,8 +157,6 @@ public partial class ProductCategoryBase
             }
         }
     }
-    
-    
 
     protected void Cancel() => MudDialog.Cancel();
 }

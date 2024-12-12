@@ -16,8 +16,8 @@ namespace Api.Document.Controllers
         }
         [HttpGet]
         public Task<VMResponse> GetAll() => _category.GetData();
-        [HttpGet("[action]/{name?}/{approval?}/{isDelete?}")]
-        public Task<VMResponse> GetAll(string? name, int? approval, bool? isDelete) => _category.GetData(name, approval, isDelete);
+        [HttpPost("[action]")]
+        public Task<VMResponse> GetByFilter(Entities.ViewModels.VMMasterSearchForm crit) => _category.GetData(crit);
         [HttpGet("[action]/{id?}")]
         public Task<VMResponse> GetID(int id) => _category.GetID(id);
         [HttpPost]

@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Entities.Domain;
 
 [Table("trProductCategory")]
+[Index("CategoryName", "ApproveBy", "Status", Name = "NonClusteredIndex-20241212-093054")]
+[Index("CategoryName", Name = "UQ_trProductCategory_CategoryName", IsUnique = true)]
 public partial class ProductCategory
 {
     [Key]
@@ -44,8 +46,8 @@ public partial class ProductCategory
     [Column("UpdateDT", TypeName = "datetime")]
     public DateTime? UpdateDt { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public byte Status { get; set; }
     [NotMapped]
-    public string StringIsDeleted { get; set; }
+    public string StringStatus { get; set; }
 
 }

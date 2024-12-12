@@ -6,13 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
+using Microsoft.Data.SqlClient;
 
 namespace App.Api.Services.ProductCategory
 {
     public interface ImsProductCategoryService
     {
         Task<Entities.Domain.VMResponse> GetData();
-        Task<VMResponse> GetData(string? name, int? approval, bool? isDelete);
+        Task<VMResponse> GetData(Entities.ViewModels.VMMasterSearchForm crit);
         Task<VMResponse> GetID(long id);
         Task<VMResponse> Create(Entities.Domain.ProductCategory request);
         Task<VMResponse> Update(Entities.Domain.ProductCategory request);
@@ -31,7 +32,7 @@ namespace App.Api.Services.ProductCategory
         {
             try
             {
-                var data = await _category.TableNoTracking.Where(w => w.IsDeleted == false).ToListAsync();
+                var data = await _category.TableNoTracking.ToListAsync();
                 if (data != null)
                 {
                     response.statusCode = System.Net.HttpStatusCode.OK;
@@ -50,31 +51,37 @@ namespace App.Api.Services.ProductCategory
             }
             return response;
         }
-        public async Task<VMResponse> GetData(string? name, int? approval, bool? isDelete)
+        public async Task<VMResponse> GetData(Entities.ViewModels.VMMasterSearchForm crit)
         {
             try
             {
                 var data = await _category.TableNoTracking.ToListAsync();
 
-                if (!name.IsNullOrEmpty())
+                var approval = crit.Approval;
+
+                if (!crit.Name.IsNullOrEmpty())
                 {
-                    data = data.Where(w => w.CategoryName.ToLower().Contains((name + "").ToLower())).ToList();
+                    data = data.Where(w => w.CategoryName.ToLower().Contains((crit.Name + "").ToLower())).ToList();
                 }
-                if (approval != null || approval != 0)
+                if (crit.Approval.HasValue)
                 {
-                    data = approval == 1 ? data.Where(w => !w.ApproveBy.IsNullOrEmpty()).ToList()
-                            : approval == 2 ? data.Where(w => w.ApproveBy.IsNullOrEmpty()).ToList()
+                    data = approval == true ? data.Where(w => !w.ApproveBy.IsNullOrEmpty()).ToList()
+                            : approval == false ? data.Where(w => w.ApproveBy.IsNullOrEmpty()).ToList()
                             : data;
                 }
-                if (isDelete == false)
+                if (crit.Status == 11)
                 {
-                    data = data.Where(w => w.IsDeleted == false).ToList();
+                    data = data.Where(w => w.Status == 11).ToList(); // 11 : deleted
                 }
-                else if(isDelete == true)
+                else if(crit.Status == 10)
                 {
-                    data = data.Where(w => w.IsDeleted == true).ToList();
+                    data = data.Where(w => w.Status == 10).ToList(); // 10 : activce
                 }
-                
+                else if (crit.Status == 99)
+                {
+                    data = data.Where(w => w.Status == 99).ToList(); // 99 : waiting approval
+                }
+
                 if (data != null)
                 {
                     response.statusCode = System.Net.HttpStatusCode.OK;
@@ -128,7 +135,7 @@ namespace App.Api.Services.ProductCategory
                         Description = request.Description,
                         CreateBy = request.CreateBy,
                         CreateDt = DateTime.Now,
-                        IsDeleted = false,
+                        Status = 99,
                     };
                     _category.Add(data);
                     await _category.SaveChangesAsync();
@@ -140,9 +147,19 @@ namespace App.Api.Services.ProductCategory
                 }
                 catch (Exception ex)
                 {
-                    dbTran.Rollback();
+                    await dbTran.RollbackAsync(); 
                     response.statusCode = System.Net.HttpStatusCode.InternalServerError;
-                    response.message = $"failed to create data category : {ex.Message}";
+
+                    if (ex.InnerException is DbUpdateException sqlEx)
+                    {
+                        response.message = ex.InnerException.InnerException.Message.ToLower().Contains("unique key constraint")
+                            ? $"Product Category {request.CategoryName} Already Exists!"
+                            : $"SQL Error: Failed to create product category - {sqlEx.Message}";
+                    }
+                    else
+                    {
+                        response.message = $"Unexpected Error: {ex.Message}";
+                    }
                 }
             }
             return response;
@@ -166,23 +183,35 @@ namespace App.Api.Services.ProductCategory
                             CreateBy = existingData.CreateBy,
                             CreateDt = existingData.CreateDt,
                             UpdateBy = request.UpdateBy,
-                            UpdateDt = DateTime.Now,
-                            IsDeleted = request.IsDeleted
+                            ApproveBy = request.ApproveBy,
+                            ApproveDt = request.ApproveDt,
+                            UpdateDt = DateTime.Today,
+                            Status = request.Status
                         };
-                        _category.Update(data);
+                        await _category.UpdateAsync(data);
                         await _category.SaveChangesAsync();
                         await dbTran.CommitAsync();
 
                         response.statusCode = System.Net.HttpStatusCode.OK;
-                        response.message = "success edit data category with id : " + data.ProductCategoryId;
+                        response.message = "success edit data category : " + data.CategoryName;
                         response.data = data;
                     }
                 }
                 catch(Exception ex)
                 {
-                    dbTran.Rollback();
-                    response.message = $"failed to edit data category : {ex.Message}";
+                    await dbTran.RollbackAsync();
                     response.statusCode = System.Net.HttpStatusCode.InternalServerError;
+
+                    if (ex.InnerException is DbUpdateException sqlEx)
+                    {
+                        response.message = ex.InnerException.InnerException.Message.ToLower().Contains("unique key constraint")
+                            ? $"Product Category {request.CategoryName} Already Exists!"
+                            : $"SQL Error: Failed to update product category - {sqlEx.Message}";
+                    }
+                    else
+                    {
+                        response.message = $"Failed to update product category : {ex.Message}";
+                    }
                 }
             }
             return response;
@@ -191,30 +220,43 @@ namespace App.Api.Services.ProductCategory
         {
             using (var dbTran = await _category.BeginTransactionAsync())
             {
+                string title = "";
                 try
                 {
+                    Entities.Domain.ProductCategory data = new Entities.Domain.ProductCategory();
                     var apiResponse = await GetID(id);
                     object? dataResponse = apiResponse.data;
                     var existingData = (Entities.Domain.ProductCategory)dataResponse;
                     if (existingData != null)
                     {
-                        Entities.Domain.ProductCategory data = new Entities.Domain.ProductCategory()
+                        if (existingData.Status != 99)
                         {
-                            ProductCategoryId = existingData.ProductCategoryId,
-                            CategoryName = existingData.CategoryName,
-                            Description = existingData.Description,
-                            CreateBy = existingData.CreateBy,
-                            CreateDt = existingData.CreateDt,
-                            UpdateBy = userName,
-                            UpdateDt = DateTime.Now,
-                            IsDeleted = true
-                        };
-                        _category.Update(data);
+                            data = new Entities.Domain.ProductCategory()
+                            {
+                                ProductCategoryId = existingData.ProductCategoryId,
+                                CategoryName = existingData.CategoryName,
+                                Description = existingData.Description,
+                                CreateBy = existingData.CreateBy,
+                                CreateDt = existingData.CreateDt,
+                                UpdateBy = userName,
+                                UpdateDt = DateTime.Now,
+                                ApproveBy = existingData.UpdateBy,
+                                ApproveDt = existingData.UpdateDt,
+                            };
+                            data.Status = 11;
+                            await _category.UpdateAsync(data);
+                            title = "deactivate";
+                        }
+                        else
+                        {
+                            _category.Delete(existingData);
+                            title = "deleted";
+                        }
                         await _category.SaveChangesAsync();
                         await dbTran.CommitAsync();
 
                         response.statusCode = System.Net.HttpStatusCode.OK;
-                        response.message = "success deactivate data category with id : " + data.ProductCategoryId;
+                        response.message = $"success {title} data product category";
                         response.data = data;
                     }
                 }
@@ -222,7 +264,7 @@ namespace App.Api.Services.ProductCategory
                 {
                     dbTran.Rollback();
                     response.statusCode = System.Net.HttpStatusCode.InternalServerError;
-                    response.message = $"failed to deactivate data category : {ex.Message}";
+                    response.message = $"failed to {title} data category : {ex.Message}";
                 }
             }
             return response;

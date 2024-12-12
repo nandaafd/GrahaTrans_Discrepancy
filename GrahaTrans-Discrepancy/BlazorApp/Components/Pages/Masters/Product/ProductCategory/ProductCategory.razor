@@ -3,49 +3,25 @@
 
 
 <MudBreadcrumbs Items="_items" Separator=">" />
-<MudContainer Class="mt-5 mb-10 px-1 pe-4" MaxWidth="MaxWidth.False">
+<MudContainer Class="mt-2 mb-10 px-1 pe-4" MaxWidth="MaxWidth.False">
     <MudGrid>
         <MudItem xs="12" md="12" sm="12" Class="px-3">
-            <MudPaper Elevation="1" Class="px-3 pb-5">
-                <MudGrid Class="pb-3">
-                    <MudItem xs="6" md="4" sm="6">
-                        <div class="form-group mb-3">
-                            <label class="form-label">Category Name</label>
-                            <input type="text" name="ProductName" class="form-control form-control-sm" placeholder="product name.." />
-                        </div>
-                    </MudItem>
-                    <MudItem xs="6" md="4" sm="6">
-                        <div class="form-group mb-3">
-                            <label class="form-label">Approved</label>
-                            <select name="Approved" class="form-select form-select-sm">
-                                <option>-- all --</option>
-                                <option value="1">Approved</option>
-                                <option value="2">UnApproved</option>
-                            </select>
-                        </div>
-                    </MudItem>
-                    <MudItem xs="6" md="4" sm="6">
-                        <div class="form-group mb-3">
-                            <label class="form-label">Status</label>
-                            <select name="Status" class="form-select form-select-sm">
-                                <option>-- all --</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                            </select>
-                        </div>
-                    </MudItem>
-                    <MudItem xs="12" md="12" sm="12">
-                        <button type="submit" class="btn btn-sm btn-outline-primary">
-                            <MudIcon Icon="@Icons.Material.Outlined.FilterAlt" Size="Size.Small" /> Filter
-                        </button>
-                        <button type="submit" class="btn btn-sm btn-primary" @onclick="OpenDialog">
-                            <MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Small" /> Add New
-                        </button>
-                    </MudItem>
-
-                </MudGrid>
+            <MudPaper Elevation="1" Class="px-3 pb-5 pt-5">
                 <div>
-                    <MudDataGrid T="Entities.Domain.ProductCategory" FixedHeader="true" Hover="true" Hideable="true" ShowMenuIcon="true" Items="@productCategories" SortMode="@_sortMode">
+                    <MudDataGrid T="Entities.Domain.ProductCategory" FixedHeader="true" Hover="true" Hideable="true" ShowMenuIcon="true" Items="@productCategories" SortMode="@_sortMode" Loading="_loading">
+                        <ToolBarContent>
+                            <button type="button" class="btn btn-sm btn-primary me-2" @onclick="OpenDialog">
+                                <MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Small" /><MudHidden Breakpoint="Breakpoint.SmAndDown"><span class="btn-title">Add New</span></MudHidden>
+                            </button>
+                            <MudSpacer />
+                            <MudSelect class="me-2" Placeholder="Status" T="byte" ValueChanged="SelStatus" Value="_selStatus"> 
+                                <MudSelectItem Value="@((byte)10)">Active</MudSelectItem>
+                                <MudSelectItem Value="@((byte)11)">NonActive</MudSelectItem>
+                                <MudSelectItem Value="@((byte)99)">Waiting Approval</MudSelectItem>
+                            </MudSelect>
+                            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 me-4"></MudTextField>
+                        </ToolBarContent>
                         <Columns>
                             <TemplateColumn HeaderStyle="" Title="Action" Hideable="false">
                                 <CellTemplate>
@@ -60,29 +36,39 @@
                                     @context.Item.ProductCategoryId
                                 </CellTemplate>
                             </PropertyColumn>
-                            <PropertyColumn Hideable="false" Property="x => x.CategoryName" Title="Name" SortBy="@_sortBy" />
+                            <PropertyColumn Hideable="false" Property="x => x.CategoryName" Filterable="true" Title="Name" SortBy="@_sortBy" />
                             <PropertyColumn Hideable="false" Property="x => x.Description" />
                             <PropertyColumn Property="x => x.CreateBy" />
-                            <PropertyColumn Property="x => x.CreateDt" Title="Created" >
+                            <PropertyColumn Property="x => x.CreateDt" Title="Created" Filterable="true">
                                 <CellTemplate>
                                     @context.Item.CreateDt.ToString("dd MMM yyyy")
                                 </CellTemplate>
                             </PropertyColumn>
                             <PropertyColumn Hidden="true" Property="x => x.UpdateBy" />
-                            <PropertyColumn Hidden="true" Property="x => x.UpdateDt" Title="Updated">
+                            <PropertyColumn Hidden="true" Property="x => x.UpdateDt" Title="Updated" Filterable="true">
                                 <CellTemplate>
                                     @context.Item.UpdateDt?.ToString("dd MMM yyyy")
                                 </CellTemplate>
                             </PropertyColumn>
-                            <PropertyColumn Hideable="false" Property="x => x.IsDeleted" Title="Status">
+                            <PropertyColumn Hidden="true" Property="x => x.ApproveBy" />
+                            <PropertyColumn Hidden="true" Property="x => x.ApproveDt" Title="Updated" Filterable="true">
                                 <CellTemplate>
-                                    @if (context.Item.IsDeleted)
+                                    @context.Item.ApproveDt?.ToString("dd MMM yyyy")
+                                </CellTemplate>
+                            </PropertyColumn>
+                            <PropertyColumn Hideable="false" Property="x => x.Status" Filterable="true" Title="Status">
+                                <CellTemplate>
+                                    @if (context.Item.Status == 11)
                                     {
-                                        <MudChip T="string" Variant="Variant.Text" Color="Color.Error">Deleted</MudChip>
+                                        <MudChip T="string" Variant="Variant.Text" Color="Color.Error">Nonactive</MudChip>
                                     }
-                                    else
+                                    else if (context.Item.Status == 10)
                                     {
                                         <MudChip T="string" Variant="Variant.Text" Color="Color.Success">Active</MudChip>
+                                    }
+                                    else if (context.Item.Status == 99)
+                                    {
+                                        <MudChip T="string" Variant="Variant.Text" Color="Color.Warning">Waiting Approval</MudChip>
                                     }
                                 </CellTemplate>
                             </PropertyColumn>
@@ -96,6 +82,7 @@
         </MudItem>
     </MudGrid>
 </MudContainer>
+
 <!-- Modal -->
 @code{}
 

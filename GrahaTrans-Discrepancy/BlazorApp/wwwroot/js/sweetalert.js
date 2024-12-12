@@ -8,7 +8,7 @@
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, nonactive it!"
+            confirmButtonText: "Confirm!"
         }).then((result) => {
             if (result.isConfirmed) {
                 dotnetHelper.invokeMethodAsync("DeleteData", id);

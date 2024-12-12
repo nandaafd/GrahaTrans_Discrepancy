@@ -15,21 +15,29 @@
                 <label for="Description" class="form-label">Description</label>
                 <MudTextField @bind-Value="_Description" Variant="Variant.Outlined" Lines="3" Placeholder="write description here.."/>
             </div>
-            @if(IsEditMode){
+            @if(IsEditMode && (!string.IsNullOrEmpty(_ApproveBy) && _StatusGet == (byte)11)){
                 <div class="mb-3">
                     <label for="CategoryName" class="form-label">Status</label>
-                    <MudSelect @bind-Value="_IsDeleted" Variant="Variant.Outlined"> 
-                        <MudSelectItem Value="false">Active</MudSelectItem>
-                        <MudSelectItem Value="true">NonActive</MudSelectItem>
+                    <MudSelect @bind-Value="_Status" T="byte" Variant="Variant.Outlined"> 
+                        <MudSelectItem Value="@((byte)10)">Active</MudSelectItem>
+                        <MudSelectItem Value="@((byte)11)">NonActive</MudSelectItem>
                     </MudSelect>
                 </div>
             }
-            <MudTextField @bind-Value="_ProductCategoryID" Disabled hidden/>
+            <MudTextField @bind-Value="_ProductCategoryID" hidden/>
+            <MudTextField @bind-Value="_ApproveBy" hidden/>
+            <MudTextField @bind-Value="_ApproveDt" hidden/>
+            @if(IsEditMode && string.IsNullOrEmpty(_ApproveBy) && _Status != 11)
+            {
+                <MudButton Class="mt-4" Variant="Variant.Filled" Color="Color.Success" @onclick="() => Submit(true)">
+                    <MudIcon Icon="@Icons.Material.Outlined.ThumbUp"/> Approve
+                </MudButton>
+            }
         </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+        <MudButton Color="Color.Primary" onclick="() => Submit(false)">Save</MudButton>
     </DialogActions>
 </MudDialog>
 @code{}
